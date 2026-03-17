@@ -13,6 +13,8 @@ const spaceGrotesk = Space_Grotesk({
   variable: '--font-display',
 });
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'Web3-Pilot | AI Growth & Security',
   description: 'Instant audits and social assets for Web3 creators.',

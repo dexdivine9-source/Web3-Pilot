@@ -23,8 +23,6 @@ import {
   summarizeValueProp 
 } from '@/app/actions/ai-actions';
 
-export const dynamic = 'force-dynamic';
-
 export default function Dashboard() {
   // Module 1: Audit
   const [auditInput, setAuditInput] = useState('');
@@ -47,15 +45,18 @@ export default function Dashboard() {
   const [summaryInput, setSummaryInput] = useState('');
   const [summaryResult, setSummaryResult] = useState<any>(null);
   const [isSummarizing, setIsSummarizing] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const handleAudit = async () => {
     if (!auditInput) return;
     setIsAuditing(true);
     try {
+      setErrorMessage(null);
       const res = await auditTokenomics(auditInput);
       setAuditResult(res);
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
+      setErrorMessage(e.message || "Failed to audit tokenomics. Check your API key in Netlify settings.");
     } finally {
       setIsAuditing(false);
     }
@@ -102,6 +103,23 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-12">
+      <AnimatePresence>
+        {errorMessage && (
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            className="fixed top-4 right-4 z-50 p-4 bg-red-500/10 border border-red-500/20 rounded-2xl flex items-center gap-3 text-red-400 backdrop-blur-md"
+          >
+            <AlertCircle size={20} />
+            <div className="text-sm">
+              <p className="font-bold">Error Occurred</p>
+              <p>{errorMessage}</p>
+            </div>
+            <button onClick={() => setErrorMessage(null)} className="ml-2 hover:text-white">✕</button>
+          </motion.div>
+        )}
+      </AnimatePresence>
       {/* Hero Section */}
       <header className="text-center space-y-4 py-12">
         <motion.div

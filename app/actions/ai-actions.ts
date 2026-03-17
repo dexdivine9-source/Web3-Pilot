@@ -2,16 +2,19 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
 
-const apiKey = process.env.GEMINI_API_KEY;
-
-if (!apiKey) {
-  throw new Error("GEMINI_API_KEY is not defined");
+function getAI() {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    throw new Error("GEMINI_API_KEY is missing. Please add it to your project environment variables (Vercel/Netlify).");
+  }
+  return new GoogleGenAI({ apiKey });
 }
 
-const ai = new GoogleGenAI({ apiKey });
+const MODEL_NAME = "gemini-1.5-flash";
 
 export async function auditTokenomics(input: string) {
-  const model = "gemini-1.5-flash";
+  const ai = getAI();
+  const model = MODEL_NAME;
   
   const systemInstruction = `
     You are a Senior Web3 Tokenomics Auditor. 
@@ -59,14 +62,15 @@ export async function auditTokenomics(input: string) {
       throw new Error("No response from AI");
     }
     return JSON.parse(response.text);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Audit Error:", error);
-    throw new Error("Failed to audit tokenomics");
+    throw new Error(error.message || "Failed to audit tokenomics");
   }
 }
 
 export async function generateWeb3Content(topic: string, projectContext: string) {
-  const model = "gemini-1.5-flash";
+  const ai = getAI();
+  const model = MODEL_NAME;
   
   const systemInstruction = `
     You are a Web3 Social Media Strategist.
@@ -99,14 +103,15 @@ export async function generateWeb3Content(topic: string, projectContext: string)
       throw new Error("No response from AI");
     }
     return JSON.parse(response.text);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Content Gen Error:", error);
-    throw new Error("Failed to generate content");
+    throw new Error(error.message || "Failed to generate content");
   }
 }
 
 export async function groundedChat(query: string, projectContext: string) {
-  const model = "gemini-1.5-flash";
+  const ai = getAI();
+  const model = MODEL_NAME;
   
   const systemInstruction = `
     You are a Web3 Project Support Bot.
@@ -129,14 +134,15 @@ export async function groundedChat(query: string, projectContext: string) {
       throw new Error("No response from AI");
     }
     return response.text;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Chat Error:", error);
-    throw new Error("Failed to process chat");
+    throw new Error(error.message || "Failed to process chat");
   }
 }
 
 export async function summarizeValueProp(technicalDocs: string) {
-  const model = "gemini-1.5-flash";
+  const ai = getAI();
+  const model = MODEL_NAME;
   
   const systemInstruction = `
     You are a Web3 Copywriter.
@@ -166,8 +172,8 @@ export async function summarizeValueProp(technicalDocs: string) {
       throw new Error("No response from AI");
     }
     return JSON.parse(response.text);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Summary Error:", error);
-    throw new Error("Failed to summarize value prop");
+    throw new Error(error.message || "Failed to summarize value prop");
   }
 }

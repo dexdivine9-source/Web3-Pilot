@@ -23,6 +23,8 @@ import {
   summarizeValueProp 
 } from '@/app/actions/ai-actions';
 
+export const dynamic = 'force-dynamic';
+
 export default function Dashboard() {
   // Module 1: Audit
   const [auditInput, setAuditInput] = useState('');
